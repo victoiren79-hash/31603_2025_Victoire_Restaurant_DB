@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reserve a Table</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <span class="brand">Restaurant DB</span>
+    <a href="index.html">Home</a>
+    <a href="tables.html">Tables</a>
+    <a href="menu.html">Menu</a>
+    <a href="reserve.html">Reserve</a>
+    <a href="orders.html">Orders</a>
+    <a href="audit.html">Audit Log</a>
+  </nav>
+  <main>
+    <h2>Make a Reservation</h2>
+    <div id="message"></div>
+
+    <form id="reserve-form">
+      <label for="customer_id">Customer</label>
+      <select id="customer_id" name="customer_id" required></select>
+
+      <label for="table_id">Table</label>
+      <select id="table_id" name="table_id" required></select>
+
+      <label for="reservation_date">Date</label>
+      <input type="date" id="reservation_date" name="reservation_date" required>
+      <div class="hint">Business rule blocks bookings on weekdays and public holidays — pick a weekend date to see it succeed.</div>
+
+      <label for="reservation_time">Time</label>
+      <input type="time" id="reservation_time" name="reservation_time" required>
+
+      <label for="party_size">Party Size</label>
+      <input type="number" id="party_size" name="party_size" min="1" required>
+
+      <button type="submit">Book Table</button>
+    </form>
+  </main>
+
+  <script>
+    // Populate customer dropdown
+    fetch("/api/customers")
+      .then(res => res.json())
+      .then(rows => {
+        const select = document.getElementById("customer_id");
+        rows.forEach(row => {
+          const [id, name] = row;
+          const opt = document.createElement("option");
+          opt.value = id;
+          opt.textContent = name;
+          select.appendChild(opt);
+        });
+      });
+
+    // Populate table dropdown
+    fetch("/api/tables")
+      .then(res => res.json())
+      .then(rows => {
+        const select = document.getElementById("table_id");
+        rows.forEach(row => {
+          const [id, number, capacity] = row;
+          const opt = document.createElement("option");
+          opt.value = id;
+          opt.textContent = `${number} (seats ${capacity})`;
+          select.appendChild(opt);
+        });
+      });
+
+    document.getElementById("reserve-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const payload = {
+        customer_id: Number(document.getElementById("customer_id").value),
+        table_id: Number(document.getElementById("table_id").value),
+        reservation_date: document.getElementById("reservation_date").value,
+        reservation_time: document.getElementById("reservation_time").value,
+        party_size: Number(document.getElementById("party_size").value),
+      };
+
+      fetch("/api/reserve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+        .then(res => res.json())
+        .then(data => {
+          const msgDiv = document.getElementById("message");
+          if (data.success) {
+            msgDiv.innerHTML = `<div class="message success">Reservation confirmed. ID: ${data.reservation_id}</div>`;
+            document.getElementById("reserve-form").reset();
+          } else {
+            msgDiv.innerHTML = `<div class="message error">Booking failed: ${data.error}</div>`;
+          }
+        })
+        .catch(err => {
+          document.getElementById("message").innerHTML =
+            `<div class="message error">Request failed: ${err.message}</div>`;
+        });
+    });
+  </script>
+</body>
+</html>
