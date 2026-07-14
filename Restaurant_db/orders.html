@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Orders</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <span class="brand">Restaurant DB</span>
+    <a href="index.html">Home</a>
+    <a href="tables.html">Tables</a>
+    <a href="menu.html">Menu</a>
+    <a href="reserve.html">Reserve</a>
+    <a href="orders.html">Orders</a>
+    <a href="audit.html">Audit Log</a>
+  </nav>
+  <main>
+    <h2>Orders Dashboard</h2>
+    <table>
+      <thead>
+        <tr><th>Order ID</th><th>Table</th><th>Status</th><th>Total (RWF)</th></tr>
+      </thead>
+      <tbody id="orders-body">
+        <tr><td colspan="4">Loading...</td></tr>
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    fetch("/api/orders")
+      .then(res => res.json())
+      .then(rows => {
+        const body = document.getElementById("orders-body");
+        body.innerHTML = "";
+        rows.forEach(row => {
+          const [id, table, status, total] = row;
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${id}</td>
+            <td>${table}</td>
+            <td>${status}</td>
+            <td>${total ? Number(total).toFixed(2) : "0.00"}</td>
+          `;
+          body.appendChild(tr);
+        });
+      })
+      .catch(err => {
+        document.getElementById("orders-body").innerHTML =
+          `<tr><td colspan="4">Error loading orders: ${err.message}</td></tr>`;
+      });
+  </script>
+</body>
+</html>

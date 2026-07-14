@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Menu</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <span class="brand">Restaurant DB</span>
+    <a href="index.html">Home</a>
+    <a href="tables.html">Tables</a>
+    <a href="menu.html">Menu</a>
+    <a href="reserve.html">Reserve</a>
+    <a href="orders.html">Orders</a>
+    <a href="audit.html">Audit Log</a>
+  </nav>
+  <main>
+    <h2>Menu</h2>
+    <table>
+      <thead>
+        <tr><th>Category</th><th>Item</th><th>Price (RWF)</th><th>Available</th></tr>
+      </thead>
+      <tbody id="menu-body">
+        <tr><td colspan="4">Loading...</td></tr>
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    fetch("/api/menu")
+      .then(res => res.json())
+      .then(rows => {
+        const body = document.getElementById("menu-body");
+        body.innerHTML = "";
+        rows.forEach(row => {
+          const [category, name, price, available] = row;
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${category}</td>
+            <td>${name}</td>
+            <td>${Number(price).toFixed(2)}</td>
+            <td>${available === 1 ? "Yes" : "No"}</td>
+          `;
+          body.appendChild(tr);
+        });
+      })
+      .catch(err => {
+        document.getElementById("menu-body").innerHTML =
+          `<tr><td colspan="4">Error loading menu: ${err.message}</td></tr>`;
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tables</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <span class="brand">Restaurant DB</span>
+    <a href="index.html">Home</a>
+    <a href="tables.html">Tables</a>
+    <a href="menu.html">Menu</a>
+    <a href="reserve.html">Reserve</a>
+    <a href="orders.html">Orders</a>
+    <a href="audit.html">Audit Log</a>
+  </nav>
+  <main>
+    <h2>Table Status</h2>
+    <table>
+      <thead>
+        <tr><th>Table</th><th>Capacity</th><th>Location</th><th>Status</th></tr>
+      </thead>
+      <tbody id="tables-body">
+        <tr><td colspan="4">Loading...</td></tr>
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    fetch("/api/tables")
+      .then(res => res.json())
+      .then(rows => {
+        const body = document.getElementById("tables-body");
+        body.innerHTML = "";
+        rows.forEach(row => {
+          const [id, number, capacity, location, status] = row;
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${number}</td>
+            <td>${capacity}</td>
+            <td>${location}</td>
+            <td><span class="status ${status.toLowerCase()}">${status}</span></td>
+          `;
+          body.appendChild(tr);
+        });
+      })
+      .catch(err => {
+        document.getElementById("tables-body").innerHTML =
+          `<tr><td colspan="4">Error loading tables: ${err.message}</td></tr>`;
+      });
+  </script>
+</body>
+</html>
