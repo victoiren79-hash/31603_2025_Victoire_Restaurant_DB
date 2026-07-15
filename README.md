@@ -132,4 +132,4 @@ python3 app/app.py
 
 ## 11. Author
 
-[Your Full Name] — DPR400210, Session Day, UNILAK, 2025–2026
+Nadjitiessem Gondje Victoire — DPR400210, Session Day, UNILAK, 2025–2026
