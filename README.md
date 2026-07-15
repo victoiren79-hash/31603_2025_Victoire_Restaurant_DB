@@ -4,8 +4,8 @@
 **Institution:** University of Lay Adventists of Kigali (UNILAK), Faculty of Computing and Information Sciences
 **Type:** Individual Capstone Project / Final Examination
 **Academic Year:** 2025–2026
-**Student:** [Your Full Name]
-**Database naming:** `2210_2025_[YourName]_Restaurant_DB`
+**Student:** Nadjitiessem GOndje Victoire
+**Database naming:** `31603_2025_Nadjitiessem_Restaurant_DB`
 
 ---
 
